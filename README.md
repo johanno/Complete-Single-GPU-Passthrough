@@ -449,6 +449,12 @@ virsh edit win10
 
 ### **Video card driver virtualisation detection**
 Video Card drivers refuse to run in Virtual Machine, so you need to spoof Hyper-V Vendor ID.
+```sh
+lspci -nn | grep NVIDIA
+0a:00.0 VGA compatible controller [0300]: NVIDIA Corporation TU106 [GeForce RTX 2070] [10de:1f03] (rev a1)
+```
+`[10de:1f03]` the first value is the Vendor ID and the second one the Device ID.
+
 <table>
 <tr>
 <th>
@@ -465,7 +471,7 @@ virsh edit win10
   ...
   <hyperv>
     ...
-    <vendor_id state='on' value='whatever'/>
+    <vendor_id state='on' value='10de'/>
     ...
   </hyperv>
   ...
