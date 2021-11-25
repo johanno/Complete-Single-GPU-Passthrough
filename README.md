@@ -306,7 +306,7 @@ Modify libvirt configuration of your VM. \
 **Note**: Save only after adding keyboard and mouse devices or the changes gets lost. \
 Using
 ```sh
-virsh edit win10
+sudo virsh edit win10
 ```
 change the first line to:
 
