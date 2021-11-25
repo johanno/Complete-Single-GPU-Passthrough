@@ -30,7 +30,6 @@ sudo update-grub
 Reboot your system for the changes to take effect.
 
 ***To verify IOMMU, run the following command, which should return result.***
-<!-- TODO: did not work for me, Maybe because I blocked my gpu from booting in grub -->
 ```sh
 sudo dmesg | grep 'IOMMU enabled'
 ```
@@ -294,7 +293,8 @@ systemctl start display-manager
   </table>
 </details>
 
-<!-- (TODO: should already be working with the VM setting, make passthrough optional step) -->
+
+<!-- TODO: did not work for me: look for easy way to use usb ports !!! -->
 ### **Keyboard/Mouse Passthrough**
 In order to be able to use keyboard/mouse in the VM, you can either passthrough the USB Host device or use Evdev passthrough.
 
