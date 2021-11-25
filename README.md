@@ -418,6 +418,7 @@ VM's audio can be routed to the host. You need ***Pulseaudio***. It's hit or mis
 You can also use [Scream](https://wiki.archlinux.org/index.php/PCI_passthrough_via_OVMF#Passing_VM_audio_to_host_via_Scream) instead of Pulseaudio. \
 Modify the libvirt configuration of your VM.
 [More detailed tutorial for Pulseaudio](https://mathiashueber.com/virtual-machine-audio-setup-get-pulse-audio-working)
+[Failed to initialize PA contextaudio](https://www.reddit.com/r/linux_gaming/comments/5tidzc/a_solution_for_pulseaudio_pa_context_connect/)
 
 <table>
 <tr>
