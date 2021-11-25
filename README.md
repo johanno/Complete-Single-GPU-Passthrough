@@ -25,14 +25,14 @@ For GRUB user, edit grub configuration.
 
 ***Generate grub.cfg***
 ```sh
-grub-mkconfig -o /boot/grub/grub.cfg
+sudo update-grub
 ```
 Reboot your system for the changes to take effect.
 
 ***To verify IOMMU, run the following command, which should return result.***
-
+[//]: <> (TODO: did not work for me, Maybe because I blocked my gpu from booting in grub)
 ```sh
-dmesg | grep 'IOMMU enabled'
+sudo dmesg | grep 'IOMMU enabled'
 ```
 
 Now, you need to make sure that your IOMMU groups are valid. \
@@ -58,7 +58,7 @@ You can avoid having to pass everything by using [ACS override patch](https://wi
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; app-emulation/qemu spice usb usbredir pulseaudio
                          
   ```sh
-  emerge -av qemu virt-manager libvirt ebtables dnsmasq
+  sudo emerge -av qemu virt-manager libvirt ebtables dnsmasq
   ```
 </details>
 
@@ -66,7 +66,7 @@ You can avoid having to pass everything by using [ACS override patch](https://wi
   <summary><b>Arch Linux</b></summary>
 
   ```sh
-  pacman -S qemu libvirt edk2-ovmf virt-manager dnsmasq ebtables
+  sudo pacman -S qemu libvirt edk2-ovmf virt-manager dnsmasq ebtables
   ```
 </details>
 
@@ -74,7 +74,7 @@ You can avoid having to pass everything by using [ACS override patch](https://wi
   <summary><b>Fedora</b></summary>
 
   ```sh
-  dnf install @virtualization
+  sudo dnf install @virtualization
   ```
 </details>
 
@@ -82,7 +82,7 @@ You can avoid having to pass everything by using [ACS override patch](https://wi
   <summary><b>Ubuntu</b></summary>
 
   ```sh
-  apt install qemu-kvm qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virt-manager ovmf
+  sudo apt install qemu-kvm qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virt-manager ovmf
   ```
 </details>
 
@@ -91,7 +91,7 @@ You can avoid having to pass everything by using [ACS override patch](https://wi
   <summary><b>SystemD</b></summary>
 
   ```sh
-  systemctl enable --now libvirtd
+  sudo systemctl enable --now libvirtd
   ```
 </details>
 
@@ -99,11 +99,12 @@ You can avoid having to pass everything by using [ACS override patch](https://wi
   <summary><b>OpenRC</b></summary>
 
   ```sh
-  rc-update add libvirtd default
-  rc-service libvirtd start
+  sudo rc-update add libvirtd default
+  sudo rc-service libvirtd start
   ```
 </details>
 
+**OPTIONAL**
 Sometimes, you might need to start default network manually.
 ```sh
 virsh net-start default
@@ -114,8 +115,9 @@ virsh net-autostart default
 ***NOTE: You should replace win10 with your VM's name where applicable*** \
 You should add your user to ***libvirt*** group to be able to run VM without root. And, ***input*** and ***kvm*** group for passing input devices.
 ```sh
-usermod -aG kvm,input,libvirt username
+sudo usermod -aG kvm,input,libvirt $USER
 ```
+[//]: <> (TODO: add images and stuff?)
 
 Download [virtio](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso) driver. \
 Launch ***virt-manager*** and create a new virtual machine. Select ***Customize before install*** on Final Step. \
@@ -137,7 +139,7 @@ More info at: [PassthroughPost](https://passthroughpo.st/simple-per-vm-libvirt-h
 
 **Note**: Comment Unbind/rebind EFI framebuffer line from start and stop script if you're using AMD 6000 series cards, thanks to [cdgriffith](https://github.com/cdgriffith).
 Also, move the line to unload AMD kernal module below detaching devices from host. These might also apply to older AMD cards.
-
+[//]: <> (TODO: automate into oneliner? And do you need to change the pci numbers in the scripts???)
 <details>
   <summary><b>Create Libvirt Hook</b></summary>
 
@@ -292,6 +294,7 @@ systemctl start display-manager
   </table>
 </details>
 
+[//]: <> (TODO: should already be working with the VM setting, make passthrough optional step)
 ### **Keyboard/Mouse Passthrough**
 In order to be able to use keyboard/mouse in the VM, you can either passthrough the USB Host device or use Evdev passthrough.
 
@@ -301,7 +304,7 @@ Using USB Host Device is simple, \
 For Evdev passthrough, follow these steps: \
 Modify libvirt configuration of your VM. \
 **Note**: Save only after adding keyboard and mouse devices or the changes gets lost. \
-Change first line to:
+Using `virsh edit win10 ` change the first line to:
 
 <table>
 <tr>
@@ -410,6 +413,7 @@ virsh edit win10
 VM's audio can be routed to the host. You need ***Pulseaudio***. It's hit or miss. \
 You can also use [Scream](https://wiki.archlinux.org/index.php/PCI_passthrough_via_OVMF#Passing_VM_audio_to_host_via_Scream) instead of Pulseaudio. \
 Modify the libvirt configuration of your VM.
+[More detailed tutorial for Pulseaudio](https://mathiashueber.com/virtual-machine-audio-setup-get-pulse-audio-working)
 
 <table>
 <tr>
