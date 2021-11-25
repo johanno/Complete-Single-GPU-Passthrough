@@ -304,7 +304,11 @@ Using USB Host Device is simple, \
 For Evdev passthrough, follow these steps: \
 Modify libvirt configuration of your VM. \
 **Note**: Save only after adding keyboard and mouse devices or the changes gets lost. \
-Using `virsh edit win10 ` change the first line to:
+Using
+```sh
+virsh edit win10
+```
+change the first line to:
 
 <table>
 <tr>
