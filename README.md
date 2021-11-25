@@ -30,7 +30,7 @@ sudo update-grub
 Reboot your system for the changes to take effect.
 
 ***To verify IOMMU, run the following command, which should return result.***
-[//]: <> (TODO: did not work for me, Maybe because I blocked my gpu from booting in grub)
+<!-- TODO: did not work for me, Maybe because I blocked my gpu from booting in grub -->
 ```sh
 sudo dmesg | grep 'IOMMU enabled'
 ```
@@ -117,7 +117,7 @@ You should add your user to ***libvirt*** group to be able to run VM without roo
 ```sh
 sudo usermod -aG kvm,input,libvirt $USER
 ```
-[//]: <> (TODO: add images and stuff?)
+<!-- (TODO: add images and stuff?) -->
 
 Download [virtio](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso) driver. \
 Launch ***virt-manager*** and create a new virtual machine. Select ***Customize before install*** on Final Step. \
@@ -139,7 +139,7 @@ More info at: [PassthroughPost](https://passthroughpo.st/simple-per-vm-libvirt-h
 
 **Note**: Comment Unbind/rebind EFI framebuffer line from start and stop script if you're using AMD 6000 series cards, thanks to [cdgriffith](https://github.com/cdgriffith).
 Also, move the line to unload AMD kernal module below detaching devices from host. These might also apply to older AMD cards.
-[//]: <> (TODO: automate into oneliner? And do you need to change the pci numbers in the scripts???)
+<!-- (TODO: automate into oneliner? And do you need to change the pci numbers in the scripts???) -->
 <details>
   <summary><b>Create Libvirt Hook</b></summary>
 
@@ -294,7 +294,7 @@ systemctl start display-manager
   </table>
 </details>
 
-[//]: <> (TODO: should already be working with the VM setting, make passthrough optional step)
+<!-- (TODO: should already be working with the VM setting, make passthrough optional step) -->
 ### **Keyboard/Mouse Passthrough**
 In order to be able to use keyboard/mouse in the VM, you can either passthrough the USB Host device or use Evdev passthrough.
 
