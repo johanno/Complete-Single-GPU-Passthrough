@@ -528,7 +528,7 @@ echo 1 > /sys/bus/pci/devices/0000:01:00.0/rom
 cat /sys/bus/pci/devices/0000:01:00.0/rom > path/to/dump/vbios.rom
 echo 0 > /sys/bus/pci/devices/0000:01:00.0/rom
 ```
-To patch vBIOS, you need to use Hex Editor (eg., [Okteta](https://utils.kde.org/projects/okteta)) and trim unnecessary header. \
+To patch vBIOS, you need to use Hex Editor (eg., [Okteta](https://utils.kde.org/projects/okteta)) `sudo apt install okteta` and trim unnecessary header. \
 For NVIDIA GPU, using hex editor, search string “VIDEO”, and remove everything before HEX value 55. \
 This is probably the same for AMD device.
 
