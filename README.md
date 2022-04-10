@@ -132,7 +132,9 @@ After successful installation of Windows, install virtio drivers from virtio CDR
 Remove Channel Spice, Display Spice, Video QXL, Sound ich* and other unnecessary devices. \
 Now, click on ***Add Hardware***, select ***PCI Devices*** and add the PCI Host devices for your GPU's VGA and HDMI Audio. Don't forget to add everything even the USB pcis
 
+//TODO rewrite
 // NOTE!!! do not try to test out the changes (dumb me) you have to finish the "Video card driver virtualisation detection" section later down first.
+// Also if your hardware config changes (added pci wifi card for example) then you need to redo this step since the pci adresses change.
 
 ### **Libvirt Hooks**
 Libvirt hooks automate the process of running specific tasks during VM state change. \
