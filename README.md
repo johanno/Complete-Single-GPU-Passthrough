@@ -123,7 +123,7 @@ Launch ***virt-manager*** and create a new virtual machine. Select ***Customize 
 In ***Overview*** section, set ***Chipset*** to ***Q35***, and ***Firmware*** to ***UEFI*** \
 In ***CPUs*** section, set ***CPU model*** to ***host-passthrough***, and ***CPU Topology*** to whatever fits your system. \
 For ***SATA*** disk of VM, set ***Disk Bus*** to ***virtio***. \
-In ***NIC*** section, set ***Device Model*** to ***virtio*** \
+In ***NIC*** section, set ***Device Model*** to ***virtio***  //TODO this seem not to work for me standard e1000e worked\
 Add Hardware > CDROM: virtio-win.iso \
 Now, ***Begin Installation***. Windows can't detect the ***virtio disk***, so you need to ***Load Driver*** and select ***virtio-iso/amd64/win10*** when prompted. \
 After successful installation of Windows, install virtio drivers from virtio CDROM. You can then remove virtio iso.
