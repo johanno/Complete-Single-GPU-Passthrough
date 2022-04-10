@@ -534,7 +534,7 @@ To patch vBIOS, you need to use Hex Editor (eg., [Okteta](https://utils.kde.org/
 sudo apt install okteta
 ```
 and trim unnecessary header. \
-For NVIDIA GPU, using hex editor, search string “VIDEO”, and remove everything before HEX value 55. \
+For NVIDIA GPU, using hex editor, search string “VIDEO”, and remove everything before HEX value 55. //TODO 55 is U in ascii probably 56 is meant\
 This is probably the same for AMD device.
 
 To use patched vBIOS, edit VM's configuration to include patched vBIOS inside ***hostdev*** block of VGA
