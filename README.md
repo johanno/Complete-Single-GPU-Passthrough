@@ -524,6 +524,7 @@ If you have Windows installed, you can use [GPU-Z](https://www.techpowerup.com/g
 To dump vBIOS on Linux, you can use following command (replace PCI id with yours): \
 If it doesn't work on your distro, you can try using live cd.
 ```sh
+sudo bash
 echo 1 > /sys/bus/pci/devices/0000:01:00.0/rom
 cat /sys/bus/pci/devices/0000:01:00.0/rom > path/to/dump/vbios.rom
 echo 0 > /sys/bus/pci/devices/0000:01:00.0/rom
