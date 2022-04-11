@@ -33,6 +33,20 @@ Reboot your system for the changes to take effect.
 ```sh
 sudo dmesg | grep 'IOMMU enabled'
 ```
+or //TODO
+    Nach einem Neustart kann man nun prüfen ob IOMMU aktiviert ist:
+
+   bei Intel:
+
+```sh 
+dmesg | grep "Virtualization Technology"
+```
+
+   oder bei AMD:
+```sh 
+dmesg | grep AMD-Vi
+```
+
 
 Now, you need to make sure that your IOMMU groups are valid. \
 Run the following script to view the IOMMU groups and attached devices. \
