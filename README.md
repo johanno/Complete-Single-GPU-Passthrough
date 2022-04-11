@@ -133,7 +133,7 @@ sudo usermod -aG kvm,input,libvirt $USER
 <!-- (TODO: add images and stuff?) -->
 
 Download [virtio](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso) driver. \
-[https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master](https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master)
+[https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master](https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master). \
 Launch ***virt-manager*** and create a new virtual machine. Select ***Customize before install*** on Final Step. \
 In ***Overview*** section, set ***Chipset*** to ***Q35***, and ***Firmware*** to ***UEFI*** \
 In ***CPUs*** section, set ***CPU model*** to ***host-passthrough***, and ***CPU Topology*** to whatever fits your system. \
