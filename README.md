@@ -61,8 +61,77 @@ for g in `find /sys/kernel/iommu_groups/* -maxdepth 0 -type d | sort -V`; do
 done;
 ```
 
+Example output:
+
+```sh
+IOMMU Group 23:
+        04:00.0 Network controller [0280]: Qualcomm Atheros AR9287 Wireless Network Adapter (PCI-Express) [168c:002e] (rev 01)
+IOMMU Group 24:
+        05:00.0 Ethernet controller [0200]: Intel Corporation I211 Gigabit Network Connection [8086:1539] (rev 03)
+IOMMU Group 25:
+        09:00.0 VGA compatible controller [0300]: NVIDIA Corporation TU106 [GeForce RTX 2070] [10de:1f02] (rev a1)
+        09:00.1 Audio device [0403]: NVIDIA Corporation TU106 High Definition Audio Controller [10de:10f9] (rev a1)
+        09:00.2 USB controller [0c03]: NVIDIA Corporation TU106 USB 3.1 Host Controller [10de:1ada] (rev a1)
+        09:00.3 Serial bus controller [0c80]: NVIDIA Corporation TU106 USB Type-C UCSI Controller [10de:1adb] (rev a1)
+IOMMU Group 26:
+        0a:00.0 Non-Essential Instrumentation [1300]: Advanced Micro Devices, Inc. [AMD] Starship/Matisse PCIe Dummy Function [1022:148a]
+IOMMU Group 27:
+```
+
 During passthrough, you need to pass every device (except PCI) in the group which includes your GPU. \
 You can avoid having to pass everything by using [ACS override patch](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Bypassing_the_IOMMU_groups_(ACS_override_patch)).
+
+
+### **TODO VFIO**
+
+
+
+debian: 
+ /etc/modprobe.d/vfio.conf 
+ ```sh 
+ options vfio-pci ids=10de:1f02,10de:10f9
+```
+ids here are the ids we can see in the IOMMU Group of our graphics card
+
+
+ Hat man den Grafiktreiber nicht geblacklistet, oder hat mehr als 1 Nvidia bzw. AMD Grafikkarte muss am besten noch folgendes in die Datei /etc/modprobe.d/vfio.conf hinzugefügt werden: 
+ 
+ für Nvidia:
+```sh
+softdep nouveau pre: vfio-pci
+```
+
+für AMD:notwenig
+```sh
+softdep amdgpu pre: vfio-pci
+```
+
+bzw. für alte AMD Karten:
+```sh
+softdep radeon pre: vfio-pci
+```
+
+
+example file:
+```sh
+options vfio-pci ids=10de:1f02,10de:10f9
+softdep nouveau pre: vfio-pci
+```
+Then:
+```sh
+sudo gedit /etc/modules
+```
+```sh
+vfio
+vfio_iommu_type1
+vfio_pci
+vfio_virqfd
+```
+
+arch:
+
+https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Loading_vfio-pci_early
+
 
 ### **Install required tools**
 <details>
