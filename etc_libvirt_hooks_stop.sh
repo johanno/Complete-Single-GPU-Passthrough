@@ -7,7 +7,6 @@ modprobe -r vfio-pci
 # Attach GPU devices to host
 # Use your GPU and HDMI Audio PCI host device
 virsh nodedev-reattach pci_0000_01_00_0
-virsh nodedev-reattach pci_0000_01_00_1
 
 # Rebind framebuffer to host
 echo "efi-framebuffer.0" > /sys/bus/platform/drivers/efi-framebuffer/bind
@@ -18,8 +17,6 @@ modprobe nvidia_modeset
 modprobe nvidia_uvm
 modprobe nvidia
 
-# Load AMD kernel module
-# modprobe amdgpu
     
 # Bind VTconsoles: might not be needed
 echo 1 > /sys/class/vtconsole/vtcon0/bind
