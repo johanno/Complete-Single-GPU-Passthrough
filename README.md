@@ -1,4 +1,5 @@
 ## **Table Of Contents**
+
 * **[IOMMU Setup](#enable--verify-iommu)**
 * **[Installing Packages](#install-required-tools)**
 * **[Enabling Services](#enable-required-services)**
@@ -11,6 +12,7 @@
 * **[GPU vBIOS Patching](#vbios-patching)**
 
 ### **Enable & Verify IOMMU**
+
 ***BIOS Settings*** \
 Enable ***Intel VT-d*** or ***AMD-Vi*** in BIOS settings. \
 If you can't find those virtualization options in BIOS, your hardware probably doesn't support it.
@@ -24,32 +26,37 @@ For GRUB user, edit grub configuration.
 | `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on iommu=pt ..."` |
 
 ***Generate grub.cfg***
+
 ```sh
 sudo update-grub
 ```
+
 Reboot your system for the changes to take effect.
 
 ***To verify IOMMU, run the following command, which should return result.***
+
 ```sh
 sudo dmesg | grep 'IOMMU enabled'
 ```
+
 or //TODO
     Nach einem Neustart kann man nun prüfen ob IOMMU aktiviert ist:
 
    bei Intel:
 
-```sh 
+```sh
 dmesg | grep "Virtualization Technology"
 ```
 
    oder bei AMD:
-```sh 
+
+```sh
 dmesg | grep AMD-Vi
 ```
 
-
 Now, you need to make sure that your IOMMU groups are valid. \
 Run the following script to view the IOMMU groups and attached devices. \
+
 ```sh
 #!/bin/bash
 shopt -s nullglob
@@ -81,46 +88,50 @@ IOMMU Group 27:
 During passthrough, you need to pass every device (except PCI) in the group which includes your GPU. \
 You can avoid having to pass everything by using [ACS override patch](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Bypassing_the_IOMMU_groups_(ACS_override_patch)).
 
-
 ### **TODO VFIO**
 
+debian:
+ /etc/modprobe.d/vfio.conf
 
-
-debian: 
- /etc/modprobe.d/vfio.conf 
- ```sh 
+ ```sh
  options vfio-pci ids=10de:1f02,10de:10f9
 ```
+
 ids here are the ids we can see in the IOMMU Group of our graphics card
 
+ Hat man den Grafiktreiber nicht geblacklistet, oder hat mehr als 1 Nvidia bzw. AMD Grafikkarte muss am besten noch folgendes in die Datei /etc/modprobe.d/vfio.conf hinzugefügt werden:
 
- Hat man den Grafiktreiber nicht geblacklistet, oder hat mehr als 1 Nvidia bzw. AMD Grafikkarte muss am besten noch folgendes in die Datei /etc/modprobe.d/vfio.conf hinzugefügt werden: 
- 
  für Nvidia:
+
 ```sh
 softdep nouveau pre: vfio-pci
 ```
 
 für AMD:notwenig
+
 ```sh
 softdep amdgpu pre: vfio-pci
 ```
 
 bzw. für alte AMD Karten:
+
 ```sh
 softdep radeon pre: vfio-pci
 ```
 
-
 example file:
+
 ```sh
 options vfio-pci ids=10de:1f02,10de:10f9
 softdep nouveau pre: vfio-pci
 ```
+
 Then:
+
 ```sh
 sudo gedit /etc/modules
 ```
+
 ```sh
 vfio
 vfio_iommu_type1
@@ -130,18 +141,19 @@ vfio_virqfd
 
 arch:
 
-https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Loading_vfio-pci_early
-
+<https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Loading_vfio-pci_early>
 
 ### **Install required tools**
+
 <details>
   <summary><b>Gentoo Linux</b></summary>
   RECOMMENDED USE FLAGS: app-emulation/virt-manager gtk<br>
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; app-emulation/qemu spice usb usbredir pulseaudio
-                         
+
   ```sh
   sudo emerge -av qemu virt-manager libvirt ebtables dnsmasq
   ```
+
 </details>
 
 <details>
@@ -150,6 +162,7 @@ https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Loading_vfio-pci_early
   ```sh
   sudo pacman -S qemu libvirt edk2-ovmf virt-manager dnsmasq ebtables
   ```
+
 </details>
 
 <details>
@@ -158,6 +171,7 @@ https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Loading_vfio-pci_early
   ```sh
   sudo dnf install @virtualization
   ```
+
 </details>
 
 <details>
@@ -166,15 +180,18 @@ https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Loading_vfio-pci_early
   ```sh
   sudo apt install qemu-kvm qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virt-manager ovmf
   ```
+
 </details>
 
 ### **Enable required services**
+
 <details>
   <summary><b>SystemD</b></summary>
 
   ```sh
   sudo systemctl enable --now libvirtd
   ```
+
 </details>
 
 <details>
@@ -184,18 +201,22 @@ https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Loading_vfio-pci_early
   sudo rc-update add libvirtd default
   sudo rc-service libvirtd start
   ```
+
 </details>
 
 **OPTIONAL**
 Sometimes, you might need to start default network manually.
+
 ```sh
 virsh net-start default
 virsh net-autostart default
 ```
 
 ### **Setup Guest OS**
+
 ***NOTE: You should replace win10 with your VM's name where applicable*** \
 You should add your user to ***libvirt*** group to be able to run VM without root. And, ***input*** and ***kvm*** group for passing input devices.
+
 ```sh
 sudo usermod -aG kvm,input,libvirt $USER
 ```
@@ -213,6 +234,10 @@ Now, ***Begin Installation***. Windows can't detect the ***virtio disk***, so yo
 After successful installation of Windows, install virtio drivers from virtio CDROM. You can then remove virtio iso.
 
 ### **Attaching PCI devices**
+
+//TODO do not remove everything... other tutorial recommends spice and video for sound 
+
+
 Remove Channel Spice, Display Spice, Video QXL, Sound ich* and other unnecessary devices. \
 Now, click on ***Add Hardware***, select ***PCI Devices*** and add the PCI Host devices for your GPU's VGA and HDMI Audio. Don't forget to add everything even the USB pcis
 
@@ -221,11 +246,23 @@ Now, click on ***Add Hardware***, select ***PCI Devices*** and add the PCI Host 
 // Also if your hardware config changes (added pci wifi card for example) then you need to redo this step since the pci adresses change.
 
 ### **Libvirt Hooks**
+
 Libvirt hooks automate the process of running specific tasks during VM state change. \
 More info at: [PassthroughPost](https://passthroughpo.st/simple-per-vm-libvirt-hooks-with-the-vfio-tools-hook-helper/)
 
 **Note**: Comment Unbind/rebind EFI framebuffer line from start and stop script if you're using AMD 6000 series cards, thanks to [cdgriffith](https://github.com/cdgriffith).
 Also, move the line to unload AMD kernal module below detaching devices from host. These might also apply to older AMD cards.
+
+
+//TODO run this for a quick install of the following libvirt hook install
+```sh
+mkdir libvirt_hook_install
+cd libvirt_hook_install
+wget install_libvirthooks.bash 
+chmod +x install_libvirthooks.bash
+# where the parameters are the pcie ids in Hex? Dec? TODO (unlimited parameters)
+./install_libvirthooks.bash 04:00.0 04:00.1 
+```
 <!-- (TODO: automate into oneliner? And do you need to change the pci numbers in the scripts???) -->
 <details>
   <summary><b>Create Libvirt Hook</b></summary>
@@ -235,6 +272,7 @@ Also, move the line to unload AMD kernal module below detaching devices from hos
   touch /etc/libvirt/hooks/qemu
   chmod +x /etc/libvirt/hooks/qemu
   ```
+
   <table>
   <tr>
   <th>
@@ -280,6 +318,7 @@ fi
   touch /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
   chmod +x /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
   ```
+
   <table>
   <tr>
   <th>
@@ -333,6 +372,7 @@ modprobe vfio-pci
   touch /etc/libvirt/hooks/qemu.d/win10/release/end/stop.sh
   chmod +x /etc/libvirt/hooks/qemu.d/win10/release/end/stop.sh
   ```
+
   <table>
   <tr>
   <th>
@@ -381,9 +421,9 @@ systemctl start display-manager
   </table>
 </details>
 
-
 <!-- TODO: did not work for me: look for easy way to use usb ports !!! -->
 ### **Keyboard/Mouse Passthrough**
+
 In order to be able to use keyboard/mouse in the VM, you can either passthrough the USB Host device or use Evdev passthrough.
 
 Using USB Host Device is simple, \
@@ -393,9 +433,11 @@ For Evdev passthrough, follow these steps: \
 Modify libvirt configuration of your VM. \
 **Note**: Save only after adding keyboard and mouse devices or the changes gets lost. \
 Using
+
 ```sh
 sudo virsh edit win10
 ```
+
 change the first line to:
 
 <table>
@@ -502,6 +544,7 @@ virsh edit win10
 </table>
 
 ### **Audio Passthrough**
+
 VM's audio can be routed to the host. You need ***Pulseaudio***. It's hit or miss. \
 You can also use [Scream](https://wiki.archlinux.org/index.php/PCI_passthrough_via_OVMF#Passing_VM_audio_to_host_via_Scream) instead of Pulseaudio. \
 Modify the libvirt configuration of your VM.
@@ -538,11 +581,14 @@ virsh edit win10
 </table>
 
 ### **Video card driver virtualisation detection**
+
 Video Card drivers refuse to run in Virtual Machine, so you need to spoof Hyper-V Vendor ID.
+
 ```sh
 lspci -nn | grep NVIDIA
 0a:00.0 VGA compatible controller [0300]: NVIDIA Corporation TU106 [GeForce RTX 2070] [10de:1f03] (rev a1)
 ```
+
 `[10de:1f03]` the first value is the Vendor ID and the second one the Device ID.
 
 <table>
@@ -601,22 +647,27 @@ virsh edit win10
 </table>
 
 ### **vBIOS Patching**
+
 ***NOTE: You only need patch the dumped ROM file. You don't need to make changes on the hardware BIOS.*** \
 While most of the GPU can be passed with stock vBIOS, some GPU requires vBIOS patching depending on your host distro. \
 In order to patch vBIOS, you need to first dump the GPU vBIOS from your system. \
 If you have Windows installed, you can use [GPU-Z](https://www.techpowerup.com/gpuz) to dump vBIOS. \
 To dump vBIOS on Linux, you can use following command (replace PCI id with yours): \
 If it doesn't work on your distro, you can try using live cd.
+
 ```sh
 sudo bash
 echo 1 > /sys/bus/pci/devices/0000:01:00.0/rom
 cat /sys/bus/pci/devices/0000:01:00.0/rom > path/to/dump/vbios.rom
 echo 0 > /sys/bus/pci/devices/0000:01:00.0/rom
 ```
-To patch vBIOS, you need to use Hex Editor (eg., [Okteta](https://utils.kde.org/projects/okteta)) 
+
+To patch vBIOS, you need to use Hex Editor (eg., [Okteta](https://utils.kde.org/projects/okteta))
+
 ```sh
 sudo apt install okteta
 ```
+
 and trim unnecessary header. \
 For NVIDIA GPU, using hex editor, search string “VIDEO”, and remove everything before HEX value 55. //TODO 55 is U in ascii probably 56 is meant\
 This is probably the same for AMD device.
@@ -650,6 +701,7 @@ To use patched vBIOS, edit VM's configuration to include patched vBIOS inside **
   </table>
 
 ### **See Also**
+
 > [Single GPU Passthrough Troubleshooting](https://docs.google.com/document/d/17Wh9_5HPqAx8HHk-p2bGlR0E-65TplkG18jvM98I7V8)<br/>
 > [Single GPU Passthrough by joeknock90](https://github.com/joeknock90/Single-GPU-Passthrough)<br/>
 > [Single GPU Passthrough by YuriAlek](https://gitlab.com/YuriAlek/vfio)<br/>
