@@ -46,14 +46,14 @@ sed -i "s/virsh nodedev-detach pci_0000_01_00_0/$str/" etc_libvirt_hooks_start.s
 sed -i "s/virsh nodedev-reattach pci_0000_01_00_0/$str2/" etc_libvirt_hooks_stop.sh
 
 
-# sudo mkdir /etc/libvirt/hooks
-# sudo mv ..
-# sudo chmod +x /etc/libvirt/hooks/qemu
+sudo mkdir /etc/libvirt/hooks
+sudo mv etc_libvirt_hooks_qemu /etc/libvirt/hooks/qemu
+sudo chmod +x /etc/libvirt/hooks/qemu
 
-# sudo mkdir -p /etc/libvirt/hooks/qemu.d/win10/prepare/begin
-# sudo mv ..
-# sudo chmod +x /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+sudo mkdir -p /etc/libvirt/hooks/qemu.d/win10/prepare/begin
+sudo mv etc_libvirt_hooks_start.sh /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+sudo chmod +x /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
 
-# sudo mkdir libvirt_hook_install
-# sudo mv ..
-# sudo chmod +x /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+sudo mkdir libvirt_hook_install
+sudo mv etc_libvirt_hooks_stop.sh /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
+sudo chmod +x /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh

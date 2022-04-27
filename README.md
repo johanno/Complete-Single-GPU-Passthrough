@@ -258,12 +258,11 @@ Also, move the line to unload AMD kernal module below detaching devices from hos
 ```sh
 mkdir libvirt_hook_install
 cd libvirt_hook_install
-wget https://raw.githubusercontent.com/johanno/Complete-Single-GPU-Passthrough/master/install_libvirt_hooks.bash
+curl -O https://raw.githubusercontent.com/johanno/Complete-Single-GPU-Passthrough/master/install_libvirt_hooks.bash
 chmod +x install_libvirt_hooks.bash
 # where the first par is amd or nvidia and the rest parameters are the pcie ids in Hex? Dec? TODO (unlimited parameters)
-./install_libvirt_hooks.bash nvidia|amd 04:00.0 04:00.1 pci-ID3
+./install_libvirt_hooks.bash nvidia|amd 04:00.0 04:00.1 pci-ID3 ...
 ```
-<!-- (TODO: automate into oneliner? And do you need to change the pci numbers in the scripts???) -->
 <details>
   <summary><b>Create Libvirt Hook</b></summary>
 
