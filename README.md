@@ -260,8 +260,8 @@ mkdir libvirt_hook_install
 cd libvirt_hook_install
 curl -O https://raw.githubusercontent.com/johanno/Complete-Single-GPU-Passthrough/master/install_libvirt_hooks.bash
 chmod +x install_libvirt_hooks.bash
-# where the first par is amd or nvidia and the rest parameters are the pcie ids in Hex? Dec? TODO (unlimited parameters)
-./install_libvirt_hooks.bash nvidia|amd 04:00.0 04:00.1 pci-ID3 ...
+# where the first par is amd or nvidia, the second one is your virtual machine name and the rest parameters are the pcie ids in Hex? Dec? TODO (unlimited parameters)
+./install_libvirt_hooks.bash nvidia|amd win10 04:00.0 04:00.1 pci-ID3 ...
 ```
 <details>
   <summary><b>Create Libvirt Hook</b></summary>
