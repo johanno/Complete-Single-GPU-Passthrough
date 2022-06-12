@@ -19,19 +19,33 @@ If you can't find those virtualization options in BIOS, your hardware probably d
 
 ***Set the kernel paramater depending on your CPU.*** \
 For GRUB user, edit grub configuration.
+
 | /etc/default/grub |
 | ----- |
 | `GRUB_CMDLINE_LINUX_DEFAULT="... intel_iommu=on iommu=pt ..."` |
 | OR |
 | `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on iommu=pt ..."` |
 
+---
 ***Generate grub.cfg***
 
-```sh
-sudo update-grub
-```
-
+### Debian/Arch:
+ ```sh
+ sudo update-grub
+ ```
+ ### Fedora:
+for UEFI systems:
+ ```sh
+ sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg 
+ ```
+ for BIOS systems //TODO afaik without uefi it doesn't work anyways
+ ```sh
+ sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+ ```
+<br/>
 Reboot your system for the changes to take effect.
+
+---
 
 ***To verify IOMMU, run the following command, which should return result.***
 
@@ -260,8 +274,10 @@ mkdir libvirt_hook_install
 cd libvirt_hook_install
 curl -O https://raw.githubusercontent.com/johanno/Complete-Single-GPU-Passthrough/master/install_libvirt_hooks.bash
 chmod +x install_libvirt_hooks.bash
-# where the first par is amd or nvidia, the second one is your virtual machine name and the rest parameters are the pcie ids in Hex? Dec? TODO (unlimited parameters)
-./install_libvirt_hooks.bash nvidia|amd win10 04:00.0 04:00.1 pci-ID3 ...
+# pcie ids in Hex? Dec? TODO 
+./install_libvirt_hooks.bash gpu-type(nvidia|amd) virt-machine-name pci-id1 pci-id2 pci-id3 ...
+# Example:                                  nvidia gpu and audio ids
+./install_libvirt_hooks.bash nvidia win10 04:00.0 04:00.1
 ```
 <details>
   <summary><b>Create Libvirt Hook</b></summary>
