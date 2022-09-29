@@ -30,46 +30,53 @@ For GRUB user, edit grub configuration.
 ***Generate grub.cfg***
 
 ### Debian/Arch:
+
  ```sh
  sudo update-grub
  ```
- ### Fedora:
+
+### Fedora:
+
 for UEFI systems:
+
  ```sh
  sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg 
  ```
- for BIOS systems //TODO afaik without uefi it doesn't work anyways
+
+for BIOS systems //TODO afaik without uefi it doesn't work anyways
+
  ```sh
  sudo grub2-mkconfig -o /boot/grub2/grub.cfg
  ```
+
 <br/>
 Reboot your system for the changes to take effect.
 
 ---
 
-***To verify IOMMU, run the following command, which should return result.***
+***To verify IOMMU, run the following command, which should return result. //TODO whaat?***
 
 ```sh
 sudo dmesg | grep 'IOMMU enabled'
 ```
 
-or //TODO
-    Nach einem Neustart kann man nun prüfen ob IOMMU aktiviert ist:
+or 
+after a restart you can verify it with the following commands:
 
-   bei Intel:
+for Intel:
 
 ```sh
 dmesg | grep "Virtualization Technology"
 ```
 
-   oder bei AMD:
+for AMD:
 
 ```sh
 dmesg | grep AMD-Vi
 ```
 
 Now, you need to make sure that your IOMMU groups are valid. \
-Run the following script to view the IOMMU groups and attached devices. \
+Run the following script to view the IOMMU groups and attached devices. 
 
 ```sh
 #!/bin/bash
@@ -100,12 +107,14 @@ IOMMU Group 27:
 ```
 
 During passthrough, you need to pass every device (except PCI) in the group which includes your GPU. \
-You can avoid having to pass everything by using [ACS override patch](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Bypassing_the_IOMMU_groups_(ACS_override_patch)).
+You can avoid having to pass everything by
+using [ACS override patch](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Bypassing_the_IOMMU_groups_(ACS_override_patch))
+.
 
 ### **TODO VFIO**
 
 debian:
- /etc/modprobe.d/vfio.conf
+/etc/modprobe.d/vfio.conf
 
  ```sh
  options vfio-pci ids=10de:1f02,10de:10f9
@@ -113,9 +122,10 @@ debian:
 
 ids here are the ids we can see in the IOMMU Group of our graphics card
 
- Hat man den Grafiktreiber nicht geblacklistet, oder hat mehr als 1 Nvidia bzw. AMD Grafikkarte muss am besten noch folgendes in die Datei /etc/modprobe.d/vfio.conf hinzugefügt werden:
+Hat man den Grafiktreiber nicht geblacklistet, oder hat mehr als 1 Nvidia bzw. AMD Grafikkarte muss am besten noch
+folgendes in die Datei /etc/modprobe.d/vfio.conf hinzugefügt werden:
 
- für Nvidia:
+für Nvidia:
 
 ```sh
 softdep nouveau pre: vfio-pci
@@ -229,46 +239,60 @@ virsh net-autostart default
 ### **Setup Guest OS**
 
 ***NOTE: You should replace win10 with your VM's name where applicable*** \
-You should add your user to ***libvirt*** group to be able to run VM without root. And, ***input*** and ***kvm*** group for passing input devices.
+You should add your user to ***libvirt*** group to be able to run VM without root. And, ***input*** and ***kvm*** group
+for passing input devices.
 
 ```sh
 sudo usermod -aG kvm,input,libvirt $USER
 ```
+
 <!-- (TODO: add images and stuff?) -->
 
-Download [virtio](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso) driver. \
+Download [virtio](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso)
+driver. \
 [https://github.com/virtio-win/virtio-win-pkg-scripts/](https://github.com/virtio-win/virtio-win-pkg-scripts/). \
 Launch ***virt-manager*** and create a new virtual machine. Select ***Customize before install*** on Final Step. \
 In ***Overview*** section, set ***Chipset*** to ***Q35***, and ***Firmware*** to ***UEFI*** \
-In ***CPUs*** section, set ***CPU model*** to ***host-passthrough***, and ***CPU Topology*** to whatever fits your system. \
+In ***CPUs*** section, set ***CPU model*** to ***host-passthrough***, and ***CPU Topology*** to whatever fits your
+system. \
 For ***SATA*** disk of VM, set ***Disk Bus*** to ***virtio***. \
-In ***NIC*** section, set ***Device Model*** to ***virtio***  //TODO this seem not to work for me standard e1000e worked\
+In ***NIC*** section, set ***Device Model*** to ***virtio***  
 Add Hardware > CDROM: virtio-win.iso \
-Now, ***Begin Installation***. Windows can't detect the ***virtio disk***, so you need to ***Load Driver*** and select ***virtio-iso/amd64/win10*** when prompted. \
+Now, ***Begin Installation***. Windows can't detect the ***virtio disk***, so you need to ***Load Driver*** and
+select ***virtio-iso/amd64/win10*** when prompted. \
 After successful installation of Windows, install virtio drivers from virtio CDROM. You can then remove virtio iso.
+
+If you don't have a working internet connection:
+- Go to device manager and uninstall drivers and delete them.
+- Restart and click on update drivers
+- select install local drivers and go to the virtio cdrom and select NetKVM then the os and your hardware
 
 ### **Attaching PCI devices**
 
-//TODO do not remove everything... other tutorial recommends spice and video for sound 
-
+//TODO do not remove everything... other tutorial recommends spice and video for sound
 
 Remove Channel Spice, Display Spice, Video QXL, Sound ich* and other unnecessary devices. \
-Now, click on ***Add Hardware***, select ***PCI Devices*** and add the PCI Host devices for your GPU's VGA and HDMI Audio. Don't forget to add everything even the USB pcis
+Now, click on ***Add Hardware***, select ***PCI Devices*** and add the PCI Host devices for your GPU's VGA and HDMI
+Audio. Don't forget to add everything even the USB pcis
 
 //TODO rewrite
-// NOTE!!! do not try to test out the changes (dumb me) you have to finish the "Video card driver virtualisation detection" section later down first.
-// Also if your hardware config changes (added pci wifi card for example) then you need to redo this step since the pci adresses change.
+// NOTE!!! do not try to test out the changes (dumb me) you have to finish the "Video card driver virtualisation
+detection" section later down first.
+// Also if your hardware config changes (added pci wifi card for example) then you need to redo this step since the pci
+adresses change.
 
 ### **Libvirt Hooks**
 
 Libvirt hooks automate the process of running specific tasks during VM state change. \
 More info at: [PassthroughPost](https://passthroughpo.st/simple-per-vm-libvirt-hooks-with-the-vfio-tools-hook-helper/)
 
-**Note**: Comment Unbind/rebind EFI framebuffer line from start and stop script if you're using AMD 6000 series cards, thanks to [cdgriffith](https://github.com/cdgriffith).
-Also, move the line to unload AMD kernal module below detaching devices from host. These might also apply to older AMD cards.
-
+**Note**: Comment Unbind/rebind EFI framebuffer line from start and stop script if you're using AMD 6000 series cards,
+thanks to [cdgriffith](https://github.com/cdgriffith).
+Also, move the line to unload AMD kernal module below detaching devices from host. These might also apply to older AMD
+cards.
 
 //TODO run this for a quick install of the following libvirt hook install
+
 ```sh
 mkdir libvirt_hook_install
 cd libvirt_hook_install
@@ -279,6 +303,7 @@ chmod +x install_libvirt_hooks.bash
 # Example:                                  nvidia gpu and audio ids
 ./install_libvirt_hooks.bash nvidia win10 04:00.0 04:00.1
 ```
+
 <details>
   <summary><b>Create Libvirt Hook</b></summary>
 
@@ -327,7 +352,7 @@ fi
 
 <details>
   <summary><b>Create Start Script</b></summary>
-  
+
   ```sh
   mkdir -p /etc/libvirt/hooks/qemu.d/win10/prepare/begin
   touch /etc/libvirt/hooks/qemu.d/win10/prepare/begin/start.sh
@@ -437,9 +462,11 @@ systemctl start display-manager
 </details>
 
 <!-- TODO: did not work for me: look for easy way to use usb ports !!! -->
+
 ### **Keyboard/Mouse Passthrough**
 
-In order to be able to use keyboard/mouse in the VM, you can either passthrough the USB Host device or use Evdev passthrough.
+In order to be able to use keyboard/mouse in the VM, you can either passthrough the USB Host device or use Evdev
+passthrough.
 
 Using USB Host Device is simple, \
 ***Add Hardware*** > ***USB Host Device***, add your keyboard and mouse device.
@@ -466,6 +493,7 @@ virsh edit win10
 <td>
 
 ```xml
+
 <domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
 ```
 
@@ -473,7 +501,8 @@ virsh edit win10
 </tr>
 </table>
 
-Find your keyboard and mouse devices in ***/dev/input/by-id***. You'd generally use the devices ending with ***event-kbd*** and ***event-mouse***. And the devices in your configuration right before closing ***`</domain>`*** tag. \
+Find your keyboard and mouse devices in ***/dev/input/by-id***. You'd generally use the devices ending with ***
+event-kbd*** and ***event-mouse***. And the devices in your configuration right before closing ***`</domain>`*** tag. \
 Replace ***MOUSE_NAME*** and ***KEYBOARD_NAME*** with your device id.
 
 <table>
@@ -488,13 +517,13 @@ virsh edit win10
 
 ```xml
 ...
-  <qemu:commandline>
+<qemu:commandline>
     <qemu:arg value='-object'/>
     <qemu:arg value='input-linux,id=mouse1,evdev=/dev/input/by-id/MOUSE_NAME'/>
     <qemu:arg value='-object'/>
     <qemu:arg value='input-linux,id=kbd1,evdev=/dev/input/by-id/KEYBOARD_NAME,grab_all=on,repeat=on'/>
-  </qemu:commandline>
-</domain>
+</qemu:commandline>
+        </domain>
 ```
 
 </td>
@@ -546,12 +575,12 @@ virsh edit win10
 ```xml
 ...
 <devices>
-  ...
-  <input type='mouse' bus='virtio'/>
-  <input type='keyboard' bus='virtio'/>
-  ...
+    ...
+    <input type='mouse' bus='virtio'/>
+    <input type='keyboard' bus='virtio'/>
+    ...
 </devices>
-...
+        ...
 ```
 
 </td>
@@ -561,7 +590,9 @@ virsh edit win10
 ### **Audio Passthrough**
 
 VM's audio can be routed to the host. You need ***Pulseaudio***. It's hit or miss. \
-You can also use [Scream](https://wiki.archlinux.org/index.php/PCI_passthrough_via_OVMF#Passing_VM_audio_to_host_via_Scream) instead of Pulseaudio. \
+You can also
+use [Scream](https://wiki.archlinux.org/index.php/PCI_passthrough_via_OVMF#Passing_VM_audio_to_host_via_Scream) instead
+of Pulseaudio. \
 Modify the libvirt configuration of your VM.
 [More detailed tutorial for Pulseaudio](https://mathiashueber.com/virtual-machine-audio-setup-get-pulse-audio-working)
 [Failed to initialize PA contextaudio](https://www.reddit.com/r/linux_gaming/comments/5tidzc/a_solution_for_pulseaudio_pa_context_connect/)
@@ -578,8 +609,8 @@ virsh edit win10
 
 ```xml
 ...
-  </devices>
-  <qemu:commandline>
+        </devices>
+<qemu:commandline>
     ...
     <qemu:arg value="-device"/>
     <qemu:arg value="ich9-intel-hda,bus=pcie.0,addr=0x1b"/>
@@ -587,8 +618,8 @@ virsh edit win10
     <qemu:arg value="hda-micro,audiodev=hda"/>
     <qemu:arg value="-audiodev"/>
     <qemu:arg value="pa,id=hda,server=/run/user/1000/pulse/native"/>
-  </qemu:commandline>
-</domain>
+</qemu:commandline>
+        </domain>
 ```
 
 </td>
@@ -619,15 +650,15 @@ virsh edit win10
 ```xml
 ...
 <features>
-  ...
-  <hyperv>
     ...
-    <vendor_id state='on' value='10de'/>
+    <hyperv>
+        ...
+        <vendor_id state='on' value='10de'/>
+        ...
+    </hyperv>
     ...
-  </hyperv>
-  ...
 </features>
-...
+        ...
 ```
 
 </td>
@@ -648,13 +679,13 @@ virsh edit win10
 ```xml
 ...
 <features>
-  ...
-  <kvm>
-    <hidden state='on'/>
-  </kvm>
-  ...
+    ...
+    <kvm>
+        <hidden state='on'/>
+    </kvm>
+    ...
 </features>
-...
+        ...
 ```
 
 </td>
@@ -684,7 +715,8 @@ sudo apt install okteta
 ```
 
 and trim unnecessary header. \
-For NVIDIA GPU, using hex editor, search string “VIDEO”, and remove everything before HEX value 55. //TODO 55 is U in ascii probably 56 is meant\
+For NVIDIA GPU, using hex editor, search string “VIDEO”, and remove everything before HEX value 55. //TODO 55 is U in
+ascii probably 56 is meant\
 This is probably the same for AMD device.
 
 To use patched vBIOS, edit VM's configuration to include patched vBIOS inside ***hostdev*** block of VGA
@@ -701,14 +733,14 @@ To use patched vBIOS, edit VM's configuration to include patched vBIOS inside **
 
   ```xml
   ...
-  <hostdev mode='subsystem' type='pci' managed='yes'>
+<hostdev mode='subsystem' type='pci' managed='yes'>
     <source>
-      ...
+        ...
     </source>
     <rom file='/home/me/patched.rom'/>
     ...
-  </hostdev>
-  ...
+</hostdev>
+        ...
   ```
 
   </td>
