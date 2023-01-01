@@ -55,5 +55,5 @@ sudo mv etc_libvirt_hooks_start.sh /etc/libvirt/hooks/qemu.d/$2/prepare/begin/st
 sudo chmod +x /etc/libvirt/hooks/qemu.d/$2/prepare/begin/start.sh
 
 sudo mkdir -p /etc/libvirt/hooks/qemu.d/$2/release/end
-sudo mv etc_libvirt_hooks_stop.sh /etc/libvirt/hooks/qemu.d/$2/prepare/begin/start.sh
-sudo chmod +x /etc/libvirt/hooks/qemu.d/$2/prepare/begin/start.sh
+sudo mv etc_libvirt_hooks_stop.sh /etc/libvirt/hooks/qemu.d/$2/release/end/stop.sh
+sudo chmod +x /etc/libvirt/hooks/qemu.d/$2/release/end/stop.sh
