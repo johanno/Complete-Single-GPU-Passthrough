@@ -54,7 +54,7 @@ Reboot your system for the changes to take effect.
 
 ---
 
-***To verify IOMMU, run the following command, which should return result. //TODO whaat?***
+***To verify IOMMU, run the following command, which should return result.**
 
 ```sh
 sudo dmesg | grep 'IOMMU enabled'
