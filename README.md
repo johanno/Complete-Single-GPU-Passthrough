@@ -719,7 +719,8 @@ sudo apt install okteta
 ```
 
 and trim unnecessary header. \
-For NVIDIA GPU, using hex editor, search string “VIDEO”, and remove everything before HEX value 55. //TODO 55 is U https://www.youtube.com/watch?v=BUSrdUoedTo&t=866s
+For NVIDIA GPU, using hex editor, search string “VIDEO”, and remove everything before HEX value 55. //TODO 55 is U https://www.youtube.com/watch?v=BUSrdUoedTo&t=866s 
+--> The U (HEX 55) is aparently the 13th byte left from the V of VIDEO (for my RTX at least)
 This is probably the same for AMD device.
 
 To use patched vBIOS, edit VM's configuration to include patched vBIOS inside ***hostdev*** block of VGA
