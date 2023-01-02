@@ -753,6 +753,17 @@ To use patched vBIOS, edit VM's configuration to include patched vBIOS inside **
 
 ### **See Also**
 
+TODO debugging errors:
+
+journalctl -rn 10000  | grep virt
+
+shows errors even if /var/log/libvirt/qemu/win10.log is not updated
+
+sudo systemctl status virtqemud
+
+shows errors of qemud when connected via ssh
+
+
 > [Single GPU Passthrough Troubleshooting](https://docs.google.com/document/d/17Wh9_5HPqAx8HHk-p2bGlR0E-65TplkG18jvM98I7V8)<br/>
 > [Single GPU Passthrough by joeknock90](https://github.com/joeknock90/Single-GPU-Passthrough)<br/>
 > [Single GPU Passthrough by YuriAlek](https://gitlab.com/YuriAlek/vfio)<br/>
